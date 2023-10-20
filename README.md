@@ -31,6 +31,7 @@ Design and implement a prototype of this system, focusing on the algorithm and d
 
 
 **Solution:**
+
 **A single transaction:**  To monitor a single transaction amount threshold, The simple solution is to use an observer design pattern. When a transaction is created, we will trigger a validation check to verify if it’s below threshold or not. If it’s exceeding the threshold, we can trigger a notification. 
 
 Now the scalability, data integrity, and fault tolerance part. To trigger the check we can use a MySQL trigger or a code trigger and send it to a queue channel like Apache Kafka or SQS.
@@ -44,12 +45,16 @@ To send the notification reliably we can use any third party email or SMS servic
 
 
 **Coding part:** Here I’ve used Laravel’s default system to demonstrate the principle. 
+
 **What I’ve done:** I’ve added an Observer to observe transaction creation. Then it’ll trigger a job to queue. The job will check the single transaction threshold and will add the current transaction to the cache and remove if there was any transaction that is older than 1 hour. 
 
 I’ve created a scheduler to check periodically if there are any sudden spikes in average transactions. Currently it’s set to check every minute. We can configure it as per our need.
 The files location: 
+
 **Observer:** `app/Observers/TransactionObserver.php`
+
 **Job:** `app/Jobs/TransactionAlert.php`
+
 **Schedule Command:** `app/Console/Commands/TransactionMonitor.php`
 
 
@@ -59,22 +64,31 @@ The files location:
 - This design provides a robust foundation for a real-time alerting system, capable of handling large volumes of transaction data, ensuring data integrity, and responding promptly to unusual activities in the syndicate transactions. Specific implementation details will depend on the chosen technologies and architecture.
 
 ## Problem 3
+
 Auptimate is planning to launch a new feature that allows fund managers to create and manage investment pools. Each pool can have multiple investors, and each investor can participate in multiple pools. The system should handle real-time updates of investment amounts, distributions, and other related transactions.
 Design the architecture for this feature ensuring scalability to accommodate a growing number of users and transactions, reliability to ensure data accuracy and availability, and security to protect sensitive financial information.
 
 **Solution:**
 <img width="1120" alt="system design" src="https://github.com/sohag-pro/auptimate/assets/18517184/95af02ea-5967-4bd2-b12c-3befd33fb3d8">
 
-Components and Their Interactions:
+**Components and Their Interactions:**
+
 **Load Balancer:** Distributes incoming traffic evenly (or as we want) across multiple web servers to ensure high availability and scalability.
+
 **Web Servers:** Handle incoming HTTP requests from users, including fund managers and investors.
+
 **API Servers:** Implement the business logic, manage real-time updates of investment amounts, distributions, and transactions, and interact with the database.
+
 **Database Cluster:** Stores data related to investment pools, fund managers, investors, transactions, and other related information. It should be designed for high availability and scalability.
 
 **Technologies and Tools:**
+
 **Load Balancer:** Use industry-standard load balancers like NGINX, AWS Elastic Load Balancer, or Azure Load Balancer for traffic distribution.
+
 **Web Servers:** Apache, NginX or any other server depending on your team's expertise.
+
 **API Servers:** Utilize microservices architecture with technologies like Node.js, Python, or Go to handle real-time updates and transactions.
+
 **Database:** Consider using a scalable relational database like Amazon Aurora, Google Cloud SQL, or a NoSQL database like MongoDB for flexible data storage.
 
 **Justification:**
@@ -83,8 +97,11 @@ Components and Their Interactions:
 - A database cluster offers high availability and can scale horizontally to accommodate a growing number of users and transactions.
 
 **Potential Bottlenecks and Strategies:**
+
 **Database Scalability:** Implement sharding or partitioning techniques to distribute the data across multiple database servers to handle a high volume of transactions.
+
 **Real-time Updates:** Use a message queue system like Apache Kafka or RabbitMQ to handle real-time updates efficiently.
+
 **Data Security:** Implement encryption at rest and in transit, role-based access control, and regular security audits to protect sensitive financial data.
 
 **Implementation and Deployment Steps:**
@@ -99,7 +116,4 @@ Components and Their Interactions:
 
 By following these steps and considering the mentioned technologies, you can design an architecture that is scalable, reliable, and secure for Auptimate's investment pool management feature.
 
-
-
-
-
+### Submitted by: [Sohag Hasan](https://sohag.pro)
