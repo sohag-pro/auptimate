@@ -63,6 +63,7 @@ Auptimate is planning to launch a new feature that allows fund managers to creat
 Design the architecture for this feature ensuring scalability to accommodate a growing number of users and transactions, reliability to ensure data accuracy and availability, and security to protect sensitive financial information.
 
 **Solution:**
+<img width="1120" alt="system design" src="https://github.com/sohag-pro/auptimate/assets/18517184/95af02ea-5967-4bd2-b12c-3befd33fb3d8">
 
 Components and Their Interactions:
 **Load Balancer:** Distributes incoming traffic evenly (or as we want) across multiple web servers to ensure high availability and scalability.
