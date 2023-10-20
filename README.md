@@ -128,7 +128,7 @@ Design the architecture for this feature ensuring scalability to accommodate a g
 
 **Data Security:** Implement encryption at rest and in transit, role-based access control, and regular security audits to protect sensitive financial data.
 
-**Implementation and Deployment Steps:**
+#### **Implementation and Deployment Steps:**
 - Develop and test the web and API servers locally or on staging environments.
 - Set up the database cluster with replication and failover mechanisms.
 - Deploy web and API servers in an auto-scaling group to ensure reliability and scalability.
