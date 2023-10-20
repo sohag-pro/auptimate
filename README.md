@@ -2,12 +2,29 @@
 <h1 align="center">Auptimate</h1>
 
 # Task explanation
-
+## Index
+- [Problem 1](#problem-1)
+    - [Solution](#solution)
+    - [Explanation](#explanation)
+- [Problem 2](#problem-2)
+    - [Solution](#solution-1)
+        - [A single transaction](#a-single-transaction)
+        - [A sudden spike](#a-sudden-spike)
+        - [Coding part](#coding-part)
+        - [Comments and Trade-offs](#comments-and-trade-offs)
+- [Problem 3](#problem-3)
+    - [Solution](#solution-2)
+        - [Components and Their Interactions](#components-and-their-interactions)
+        - [Technologies and Tools](#technologies-and-tools)
+        - [Justification](#justification)
+        - [Potential Bottlenecks and Strategies](#potential-bottlenecks-and-strategies)
+        - [Implementation and Deployment Steps](#implementation-and-deployment-steps)
 
 ## Problem 1: 
 Imagine you are given a dataset containing transactional records of different investors in various syndicates over several years. Each record contains an investor ID, syndicate ID, transaction amount, and transaction date. Your task is to identify and list the top 5 investors who have invested in the highest number of unique syndicates, along with the total amount they have invested.
 
-**Solution**: I’ll use mySQL to get the data with just one select query.
+### **Solution**: 
+I’ll use mySQL to get the data with just one select query.
 ```mysql
 SELECT
     investor_id,
@@ -20,7 +37,8 @@ ORDER BY
     total_investment DESC
 LIMIT 5;
 ```
-**Explanation:** Using GROUP BY to get all the transactions of a single investor. Then calculate the total amount and count unique syndicate_id. Lastly, Order by unique_syndicates count to get the top investor first and limit the result to 5 rows only. 
+### **Explanation:** 
+Using GROUP BY to get all the transactions of a single investor. Then calculate the total amount and count unique syndicate_id. Lastly, Order by unique_syndicates count to get the top investor first and limit the result to 5 rows only. 
 
 
 ## Problem 2: 
@@ -30,23 +48,27 @@ A sudden spike in the number of transactions within a short period (e.g., 10x th
 Design and implement a prototype of this system, focusing on the algorithm and data structures that will enable real-time processing and analysis.
 
 
-**Solution:**
+### **Solution:**
 
-**A single transaction:**  To monitor a single transaction amount threshold, The simple solution is to use an observer design pattern. When a transaction is created, we will trigger a validation check to verify if it’s below threshold or not. If it’s exceeding the threshold, we can trigger a notification. 
+#### **A single transaction:**  
+To monitor a single transaction amount threshold, The simple solution is to use an observer design pattern. When a transaction is created, we will trigger a validation check to verify if it’s below threshold or not. If it’s exceeding the threshold, we can trigger a notification. 
 
 Now the scalability, data integrity, and fault tolerance part. To trigger the check we can use a MySQL trigger or a code trigger and send it to a queue channel like Apache Kafka or SQS.
 To send the notification reliably we can use any third party email or SMS service like SES, twilio
 
 
-**A sudden spike:** To get a sudden spike in an hour, we can count last 24 hours transactions’ and keep that in cache. And also we can keep the last one hour’s transaction in another cache. And we can check periodically if the count of last hour's transactions are more than 24 hour’s average. If yes, we can check how much is the percentage and check with a predefined threshold. If the percentage crosses the predefined transaction, we can send the alert. 
+#### **A sudden spike:** 
+To get a sudden spike in an hour, we can count last 24 hours transactions’ and keep that in cache. And also we can keep the last one hour’s transaction in another cache. And we can check periodically if the count of last hour's transactions are more than 24 hour’s average. If yes, we can check how much is the percentage and check with a predefined threshold. If the percentage crosses the predefined transaction, we can send the alert. 
 
 Now the scalability, data integrity, and fault tolerance part. We can use reliable cache storage like Kafka, Redis, Amazon ElastiCache etc. 
 To send the notification reliably we can use any third party email or SMS service like SES, twilio
 
 
-**Coding part:** Here I’ve used Laravel’s default system to demonstrate the principle. 
+#### **Coding part:** 
+Here I’ve used Laravel’s default system to demonstrate the principle. 
 
-**What I’ve done:** I’ve added an Observer to observe transaction creation. Then it’ll trigger a job to queue. The job will check the single transaction threshold and will add the current transaction to the cache and remove if there was any transaction that is older than 1 hour. 
+#### **What I’ve done:** 
+I’ve added an Observer to observe transaction creation. Then it’ll trigger a job to queue. The job will check the single transaction threshold and will add the current transaction to the cache and remove if there was any transaction that is older than 1 hour. 
 
 I’ve created a scheduler to check periodically if there are any sudden spikes in average transactions. Currently it’s set to check every minute. We can configure it as per our need.
 The files location: 
@@ -58,7 +80,7 @@ The files location:
 **Schedule Command:** `app/Console/Commands/TransactionMonitor.php`
 
 
-**Comments and Trade-offs:**
+#### **Comments and Trade-offs:**
 - Trade-offs might involve choosing between low-latency alerting and precision. A shorter time window for spike detection might result in more false positives.
 - The choice of the technology stack for data processing and storage will affect scalability and reliability.
 - This design provides a robust foundation for a real-time alerting system, capable of handling large volumes of transaction data, ensuring data integrity, and responding promptly to unusual activities in the syndicate transactions. Specific implementation details will depend on the chosen technologies and architecture.
@@ -68,10 +90,11 @@ The files location:
 Auptimate is planning to launch a new feature that allows fund managers to create and manage investment pools. Each pool can have multiple investors, and each investor can participate in multiple pools. The system should handle real-time updates of investment amounts, distributions, and other related transactions.
 Design the architecture for this feature ensuring scalability to accommodate a growing number of users and transactions, reliability to ensure data accuracy and availability, and security to protect sensitive financial information.
 
-**Solution:**
+### **Solution:**
 <img width="1120" alt="system design" src="https://github.com/sohag-pro/auptimate/assets/18517184/95af02ea-5967-4bd2-b12c-3befd33fb3d8">
 
-**Components and Their Interactions:**
+
+#### **Components and Their Interactions:**
 
 **Load Balancer:** Distributes incoming traffic evenly (or as we want) across multiple web servers to ensure high availability and scalability.
 
@@ -81,7 +104,8 @@ Design the architecture for this feature ensuring scalability to accommodate a g
 
 **Database Cluster:** Stores data related to investment pools, fund managers, investors, transactions, and other related information. It should be designed for high availability and scalability.
 
-**Technologies and Tools:**
+
+#### **Technologies and Tools:**
 
 **Load Balancer:** Use industry-standard load balancers like NGINX, AWS Elastic Load Balancer, or Azure Load Balancer for traffic distribution.
 
@@ -91,12 +115,12 @@ Design the architecture for this feature ensuring scalability to accommodate a g
 
 **Database:** Consider using a scalable relational database like Amazon Aurora, Google Cloud SQL, or a NoSQL database like MongoDB for flexible data storage.
 
-**Justification:**
+#### **Justification:**
 - Load balancing ensures even (or as we want) distribution of traffic, improving scalability and reliability.
 - Web and API servers provide separation of concerns, making it easier to manage and scale individual components.
 - A database cluster offers high availability and can scale horizontally to accommodate a growing number of users and transactions.
 
-**Potential Bottlenecks and Strategies:**
+#### **Potential Bottlenecks and Strategies:**
 
 **Database Scalability:** Implement sharding or partitioning techniques to distribute the data across multiple database servers to handle a high volume of transactions.
 
